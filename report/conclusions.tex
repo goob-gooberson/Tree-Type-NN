@@ -1,0 +1,55 @@
+%% ---------------------------------------------------------------------------------------
+\section{Interpretations and conclusions}
+\label{sec:conc}
+
+\begin{enumerate}[leftmargin=*]
+\item \textbf{The tree is a constructive proof of interpolation, and a microscope on it.} The note's
+  construction carries over to neural nodes almost unchanged: hinge-loss nodes, closed-form
+  connection weights, and an isolation node to guarantee termination. Because every node knows which
+  samples it is responsible for, the tree makes visible \emph{who} memorises \emph{what}: the root
+  fits the regular structure, first-level children the atypical members of each class, deeper nodes
+  individual cluttered or mislabelled-looking photographs, and -- with label noise -- most of the first-level children's positives are corrupted labels.
+\item \textbf{The price of 100\% training accuracy depends on how locally one memorises.}
+  Interpolation is not harmful or benign in itself. Learned correctors generalise the memorised
+  points to whole regions -- deep ones literally fire on ``anything that is not a known negative'' --
+  and cost up to 5 test points; isolation nodes (max-margin caps around single
+  points) are a lookup table that never fires on test images and costs nothing, at the price of one
+  hidden unit per memorised image. This is the tree-level version of the benign-overfitting picture
+  \cite{bartlett,feldman}: memorising the long tail is harmless when it is spiky and local.
+\item \textbf{Double descent is a property of the root; the tree jumps over the classical regime.}
+  The peak sits exactly where the root first interpolates, with and without noise. Growing children
+  reaches interpolation with far fewer parameters per node than widening, but it reaches the same
+  over-parameterised error level, never the classical optimum.
+\item \textbf{Features decide everything that matters.} Pixels give large trees that generalise poorly
+  (60\% on Cats vs Dogs); a trunk trained on the same data hides memorisation inside the trunk;
+  a set of trunks with per-node selection gives the smallest and best trees, because a node's errors
+  are best separated in a feature space other than the one that produced them.
+\item \textbf{Small and interpolating are at odds with good test accuracy.} The smallest
+  interpolating network is the MLP at the threshold width -- the double-descent peak. Within a fixed
+  tree, decision-preserving pruning removes 20--32\% of the weights for free, and cost-complexity
+  pruning shows a near-linear exchange of 0.3--0.5 test points per training point.
+\end{enumerate}
+
+\paragraph{Challenges encountered.} (i) Child problems are extremely imbalanced and ``inside-out'';
+without class weights the child learns ``never fire'', and linear children almost never make progress.
+(ii) The connection weights of the LP are badly scaled (hundreds) -- the closed form is both exact and
+better conditioned. (iii) A trunk trained on the same images inflates the root's training accuracy.
+(iv) On a 2-core CPU, the trunks have to be frozen and features cached; oversubscribing the cores
+slowed PyTorch down five-fold.
+
+\section{Future directions}
+\begin{itemize}[leftmargin=*]
+\item \textbf{Local neural correctors.} Gate each learned corrector by an isolation cap around its
+  own positives (fire only if both agree): it would keep the compactness of the network and the
+  test-time locality of the lookup table.
+\item \textbf{Multi-head detectors.} Replace the $K$ detectors $D_k$ by one network with $K$
+  outputs and a shared hidden layer, trained jointly with the Table~II targets of all classes.
+\item \textbf{Fine-tuning the trunk with the tree.} Back-propagate the corrector losses into the
+  last trunk layers, so that the features themselves are reshaped to make the errors separable.
+\item \textbf{Margin-based growth past interpolation.} Keep growing children for samples whose margin
+  is below $\gamma>0$; by analogy with boosting~\cite{schapire} this may continue to improve test error
+  after the training error is zero.
+\item \textbf{Minimal-complexity nodes.} Train every node with the minimal complexity machine
+  objective~\cite{mcm} or with the zero-norm~\cite{weston}, as the note suggests, to obtain the sparsest
+  node that solves its sub-problem.
+\end{itemize}

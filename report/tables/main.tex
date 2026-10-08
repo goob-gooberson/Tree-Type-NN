@@ -1,0 +1,18 @@
+\begin{tabular}{@{}lrrrrrrrr@{}}\toprule
+ & \multicolumn{2}{c}{root acc. (\%)} & \multicolumn{2}{c}{tree acc. (\%)} & nodes & & & test fixed/\\
+\cmidrule(lr){2-3}\cmidrule(lr){4-5}
+configuration & train & test & train & test & (isol.) & params & depth & broken\\\midrule
+\multicolumn{9}{@{}l}{\emph{CIFAR-10 -- corrector tree, root $128\to64\to10$, binary nodes $h=8$}}\\
+pixels & 60.6 & 50.8 & 100.0 & \textbf{48.5} & 107 (6) & 1470.1k & 10 & 395/627\\
+scratch CNN & 92.1 & 84.8 & 100.0 & \textbf{81.8} & 83 (2) & 144.0k & 6 & 109/406\\
+ResNet-18 (ImageNet) & 84.2 & 74.5 & 100.0 & \textbf{69.8} & 67 (0) & 77.6k & 4 & 256/729\\
+CNN + ResNet, per-node trunk selection & 92.1 & 84.8 & 100.0 & \textbf{82.2} & 35 (0) & 44.3k & 4 & 167/422\\
+\midrule
+\multicolumn{9}{@{}l}{\emph{Cats vs Dogs -- the note's binary tree, every node $128\to h\to1$}}\\
+pixels & 71.5 & 63.2 & 100.0 & \textbf{59.8} & 38 (0) & 39.6k & 6 & 439/606\\
+scratch CNN & 96.1 & 94.1 & 100.0 & \textbf{92.1} & 17 (1) & 17.4k & 4 & 54/155\\
+ResNet-18 (ImageNet) & 97.9 & 93.4 & 100.0 & \textbf{93.2} & 5 (0) & 5.2k & 2 & 40/50\\
+CNN + ResNet, per-node trunk selection & 97.9 & 93.4 & 100.0 & \textbf{93.3} & 5 (0) & 5.2k & 2 & 40/45\\
+scratch CNN, single neurons ($h=0$, the note) & 95.8 & 93.6 & 100.0 & \textbf{93.6} & 3 (2) & 107.7k & 1 & 1/1\\
+scratch CNN, $h=8$, LP (6)--(9) + $\ell_1$ & 96.2 & 94.0 & 100.0 & \textbf{92.1} & 17 (1) & 17.4k & 4 & 50/145\\
+\bottomrule\end{tabular}

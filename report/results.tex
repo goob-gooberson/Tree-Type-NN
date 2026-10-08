@@ -1,0 +1,120 @@
+%% ---------------------------------------------------------------------------------------
+\section{Results: overfitting to 100\% training accuracy}
+\label{sec:results}
+
+Table~\ref{tab:main} is the main result. Every configuration reaches \textbf{100.0\% training
+accuracy}; we verify this on every training sample after the tree is built, not from the training
+loss. The columns ``root'' give the accuracy of the root network alone (what an ordinary small
+network achieves), ``nodes (isol.)'' counts all networks in the tree, root included, and how many of
+them are closed-form isolation nodes, and ``test fixed/broken'' attributes every test prediction that the
+children changed: \emph{fixed} if the root was wrong and the tree is right, \emph{broken} if the root
+was right and the tree is wrong.
+
+\begin{table}[t]
+\centering\small
+\caption{Trees grown to 100\% training accuracy. Root = the root network alone. ``Test fixed/broken''
+counts test images whose prediction the children changed from wrong to right / right to wrong.}
+\label{tab:main}
+\resizebox{\linewidth}{!}{\input{tables/main.tex}}
+\end{table}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{tree_cd_cnn.pdf}
+\caption{The Cats vs Dogs tree (CNN trunk, $h=8$), drawn like Fig.~4 of the note: each box is a
+$128\!\to\!8\!\to\!1$ network trained on $n$ samples of which ``$+m$'' must make it fire; arrows carry
+the closed-form connection weights \eqref{eq:closed}. A is always the ``missed'' child and B the
+``false-alarm'' child. One child (red) could not make progress and became an isolation node with 6
+caps. The tree classifies all 19\,989 training images correctly.}
+\label{fig:treecd}
+\end{figure}
+
+\paragraph{Overfitting is always achieved, at very different costs.}
+As with deep networks trained on random labels~\cite{zhang},
+reaching 100\% is never the hard part. How many nodes interpolation needs is set by how far the root is from interpolating, i.e.\ by the
+features. On Cats vs Dogs the ImageNet trunk leaves the root at 97.9\% training accuracy and the whole
+tree has five nodes; with the scratch CNN it has 17, with pixels 38. On CIFAR-10 the root leaves 7.9k
+(ResNet), 3.9k (CNN) or 19.7k (pixel) training errors and the corrector tree grows to
+67, 83 and 107 nodes (the pixel tree reaches the depth limit and needs 1.47M parameters). In the paper's own setting -- every node a \emph{single} neuron
+($h=0$) on CNN features -- the root neuron already reaches 95.8\%/93.6\%, but neither linear child
+can solve its sub-problem: the balanced linear child $A$ catches 384 of the 404 missed dogs at the
+price of 2\,076 false alarms. These ``inside-out'' sub-problems (positives surrounded by the
+parent's correctly classified negatives) are exactly what made the MNIST tree of the first assignment
+deep; here both children fall back to isolation nodes. With $h=8$ hidden units all but one child make
+progress and the tree reaches depth 4 with a single isolation leaf.
+
+\paragraph{The LP (6)--(9) and the redundant slacks.} Re-solving each node's output layer
+together with $(w_A,w_B)$ as the note's LP (HiGHS, $\ell_1$ weight $10^{-3}$) gives \emph{exactly zero
+total slack at every one of the 9 internal nodes} of the Cats vs Dogs tree -- the slacks are redundant,
+as the note says -- and the same tree to within 0.06\% test accuracy (92.12\% vs 92.06\%). The LP
+solutions are vertices with large connection weights ($w_A=232$, $w_B=-169$ at the root, versus
+4.9 and $-3.8$ in closed form \eqref{eq:closed}), the badly scaled regime in which an LP solver can
+report spurious non-zero slacks.
+
+\paragraph{Interpolation lowers test accuracy, because the correctors generalise.}
+Whenever the children are learned networks, the tree is \emph{worse} on test data than its own
+root (by 0.1--4.7 points; Table~\ref{tab:main}), and the fixed/broken column shows why: each child is a small network trained on its
+own few hundred or thousand positives, it learns a decision region rather than a list of points, and
+on test images that region also covers images the root had right. Corrections break 1.3--4.4 test
+predictions for every one they fix. This is the classical over-fitting picture, made visible node
+by node.
+
+\begin{table}[t]
+\centering\small
+\caption{Width of the binary nodes (CIFAR-10, ResNet trunk, corrector tree; root fixed at
+$128\!\to\!64\!\to\!10$, 84.2\% train / 74.5\% test). ``Isolation only'' replaces every child by a
+closed-form isolation node.}
+\label{tab:width}
+\resizebox{\linewidth}{!}{\input{tables/width.tex}}
+\end{table}
+
+\paragraph{Benign versus harmful interpolation.} Table~\ref{tab:width} varies the width of the
+correcting networks with the root held fixed. Linear children ($h=0$) never make progress, so the
+tree consists of the root plus ten isolation nodes with 7\,902 caps -- one per training error -- and
+its test accuracy is the root's: the caps changed only 10 of 10\,000 test predictions, all ten for
+the better. The same holds when isolation is forced. Learned correctors are 13$\times$ smaller
+(77.6k vs 1.03M parameters) but cost 1.2--4.7 points; the damage is largest for $h=8$--32 and
+shrinks again for $h=128$, whose wider detectors fit their positives with tighter regions. This is
+the sharpest form of the trade-off behind the whole assignment: \emph{memorising like a lookup table is
+harmless but large; memorising with a small network is compact but generalises the noise.}
+
+\begin{table}[t]
+\centering\small
+\caption{Multiclass extensions (CIFAR-10, ResNet trunk, $h=8$).}
+\label{tab:archs}
+\resizebox{\linewidth}{!}{\input{tables/arch.tex}}
+\end{table}
+
+\paragraph{Multiclass architectures (Table~\ref{tab:archs}).} The one-vs-rest forest is the most
+expensive and the worst: ten independent roots make 10$\times$ more decisions, each binary root
+errs on its own samples, and the forest needs 145 nodes and 151k parameters (67.1\% test). The
+corrector tree shares one $K$-way root and grows detectors only for classes with errors (67 nodes,
+77.6k). The gated tree is the most instructive: its re-classifier $R$ is easy (it relearns the 7\,902
+errors of the root with only 31 mistakes), but its error detector $E$ must answer ``is the root wrong
+here?'', which is as hard as the original problem -- the $h=8$ detector finds only 1\,060 of the 7\,902
+errors and its missed-error child falls back to a 6\,839-cap isolation node. Detecting one's own errors
+does not get easier by moving it into a separate node.
+
+\begin{table}[t]
+\centering\small
+\caption{A trunk that has seen the data hides overfitting. CNN trunk trained on half $S_A$ of
+CIFAR-10 (82.5\% test); trees grown on $S_A$ and on the unseen half $S_B$ (25k images each).}
+\label{tab:half}
+\resizebox{\linewidth}{!}{\input{tables/half.tex}}
+\end{table}
+
+\paragraph{Where the memorisation lives (Table~\ref{tab:half}).} With features from a trunk that was
+trained on $S_A$, the root fits $S_A$ to 90.2\% but the unseen $S_B$ only to 85.0\%, while both roots
+test at $\approx$81.5\%. The 5-point gap is memorisation that already happened inside the trunk, and
+the tree pays for it on $S_B$: 95 instead of 61 nodes and 47\% more parameters. When features come from
+a trunk trained on the same images, a small tree is therefore \emph{not} evidence of an easy problem.
+This is why the ImageNet trunk, which never saw the target images, is the cleanest place to study
+interpolation in the tree itself, and why we use it for the double-descent experiments.
+
+\paragraph{A set of trunks, chosen per node.} When every node may choose between the CNN and the
+ResNet features (Table~\ref{tab:main}), the roots choose the trunk with the lower training error
+(CNN on CIFAR-10, ResNet on Cats vs Dogs) but \emph{all ten} first-level detectors on CIFAR-10 choose the
+ResNet features, and deeper nodes alternate (depth 2: 7 CNN / 7 ResNet; depth 3: 6/2). The root's
+errors are exactly the images on which the CNN's features are ambiguous, so they are best separated in
+a different feature space. The resulting tree is 2.4$\times$ smaller than the CNN-only tree (35 vs 83
+nodes, 44k vs 144k parameters) and better on test data (82.2\% vs 81.8\%).

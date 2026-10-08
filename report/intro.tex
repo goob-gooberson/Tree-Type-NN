@@ -1,0 +1,48 @@
+\section{Introduction}
+The note~\cite{note} builds a classifier as a tree of threshold neurons: a parent neuron is trained
+to make as few mistakes as possible (LP (1)--(3)); its missed positives and false alarms become the
+training targets of two children $A$ and $B$ whose outputs are added to the parent's net input with
+weights $w_A\ge0$ and $w_B\le0$ (Table~II, LP (6)--(9)); and the children are grown in the same way
+until every training sample is classified correctly~\cite{martinelli,svmtree}. This assignment asks
+for the same construction with \emph{every node a small neural network}, on CIFAR-10 and Cats vs Dogs,
+and to (1) provide suitable features, (2) overfit to 100\% training accuracy and look for double
+descent, (3) visualise receptive fields of nodes, and (4) minimise the network.
+
+\paragraph{Summary of findings.}
+\begin{enumerate}[leftmargin=*]
+\item \textbf{Formulation (\S\ref{sec:method}).} Node training is the hinge-loss form of LP (1)--(3)
+  with class weights; the connection-weight LP (6)--(9) has a closed form; the slacks are
+  redundant (the LP returns zero slack at every node, \S\ref{sec:results}); isolation nodes guarantee
+  100\% training accuracy. The \emph{corrector tree} generalises Table~II exactly to $K$ classes.
+\item \textbf{100\% training accuracy everywhere (\S\ref{sec:results}).} All 20 tree
+  configurations on both datasets and all trunks (and the 24 trees of the double-descent sweeps)
+  interpolate their training sets, with 3--145 nodes.
+\item \textbf{How a tree interpolates decides the price of interpolation.} Neural correctors are
+  small networks that \emph{generalise}, so on test images they fire outside the memorised points
+  and break more predictions than they fix (fixed:broken between 1:1.3 and 1:4.4, typically $\approx$1:3);
+  they help only when the root is badly under-fitted. Isolation nodes
+  only fire within a max-margin cap around each memorised point and almost never fire on test
+  images: the tree interpolates with \emph{no} loss (CIFAR-10/ResNet 74.5\%$\to$74.6\%; 10 test
+  predictions changed, all of them fixes), but at $\sim$1M parameters.
+\item \textbf{Features (\S\ref{sec:features}).} A trunk trained on the tree's own data hides part
+  of the overfitting inside the trunk: a tree on the half of CIFAR-10 the trunk was trained on needs
+  61 nodes, on the unseen half 95. With a \emph{set} of trunks, every node choosing its trunk, the root
+  picks the scratch CNN but all ten first-level detectors pick the ImageNet trunk -- a node's errors are
+  best detected in a \emph{different} feature space -- and the tree shrinks from 83 to 35 nodes while
+  its test accuracy rises.
+\item \textbf{Double descent (\S\ref{sec:dd}).} With 20\% label noise the root MLP's test error
+  falls to 33.2\%, peaks at 53.8\% at the first width that interpolates ($H=64$), and descends again
+  to 39.0\% at $H=4096$. Trees interpolate at every width; for $H<64$ they sit at 47--48\%, i.e.\ on
+  the over-parameterised branch, and the tree's own error-vs-width curve shows the same peak at $H=64$.
+\item \textbf{Receptive fields (\S\ref{sec:rf}).} Roots are object-centred class templates;
+  children respond to atypical members of a class; deep nodes memorise cluttered, multi-object or
+  mislabelled photos (one is a rescue-centre logo filed as ``dog''). The spatial extent of the
+  saliency is set by the trunk and does not change with depth, but deep nodes increasingly recognise
+  their positives \emph{by exclusion} -- up to 52\% of them are fired by the output bias with every
+  hidden unit silent -- which is why they over-generalise.
+\item \textbf{Minimising size (\S\ref{sec:min}).} Per-node trunk selection shrinks the CIFAR-10
+  tree 3.3$\times$ (144k$\to$44k parameters) at higher test accuracy; decision-preserving pruning
+  removes a further 20--32\% of the weights with every training decision unchanged; and, taken
+  literally, the smallest interpolating network is a single MLP at the double-descent peak -- the
+  worst-generalising interpolator of all.
+\end{enumerate}

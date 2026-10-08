@@ -1,0 +1,26 @@
+\section{Code, reproduction and file map}
+\label{app:code}
+The private repository \url{\githuburl} contains the library, every experiment script, all result
+files (JSON) behind the tables and figures, and this report's \LaTeX{} source. \texttt{run\_all.py}
+lists every command in order; \texttt{README.md} documents the design.
+
+\begin{center}\small
+\begin{tabular}{@{}>{\raggedright\arraybackslash}p{0.42\linewidth}>{\raggedright\arraybackslash}p{0.54\linewidth}@{}}
+\toprule
+\texttt{treenn/node.py} & node networks, weighted-hinge training \eqref{eq:node}, isolation nodes\\
+\texttt{treenn/tree.py} & binary tree (Table~II), closed-form and LP connection weights, OvR, corrector and gated trees\\
+\texttt{treenn/trunks.py} & pixel / scratch-CNN / ResNet-18 trunks, FeatureMap\\
+\texttt{treenn/receptive.py} & input-gradient receptive fields and statistics\\
+\texttt{treenn/minimize.py} & decision-preserving pruning, cost-complexity subtree pruning\\
+\texttt{scripts/run\_tree.py} & grow one tree; e.g.\ \texttt{--dataset catsdogs --feats cnn --model binary --h 8}\\
+\texttt{scripts/run\_double\_descent.py} & width sweep, MLP vs tree\\
+\texttt{scripts/receptive\_fields.py}, \texttt{analyse\_tree.py}, \texttt{run\_minimize.py} & analyses of a saved tree\\
+\texttt{scripts/make\_figures.py} & all figures and tables of this report from \texttt{results/}\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\noindent Data: CIFAR-10 from the image-folder mirror \texttt{YoongiKim/CIFAR-10-images} (JPEG, 50k/10k),
+Kaggle Cats vs Dogs from \texttt{laxmimerit/dog-cat-full-dataset} (19\,989 train / 5\,000 test as
+provided by the mirror). ImageNet ResNet-18 weights: \texttt{timm} \emph{resnet18.a1\_in1k}~\cite{timm}.
+Hardware: 2 CPU cores, 8\,GB RAM, no GPU.

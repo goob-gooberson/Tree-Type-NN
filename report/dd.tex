@@ -1,0 +1,77 @@
+%% ---------------------------------------------------------------------------------------
+\section{Double descent}
+\label{sec:dd}
+
+\paragraph{Protocol.} Double descent is easiest to see with few samples and label noise
+\cite{belkin,nakkiran}, so we use $n=4\,000$ CIFAR-10 training images (ImageNet trunk, PCA-64), with
+clean labels and with 20\% of the labels replaced by a random wrong class, and the full 10\,000-image
+test set. For every width $H\in\{1,2,4,\dots\}$ we train one MLP $64\!\to\!H\!\to\!10$ with
+full-batch Adam for 3\,000 steps and no regularisation, and then grow a corrector tree that uses
+\emph{that same MLP as its root} and binary nodes of width $H$, until it interpolates. The two curves in
+Fig.~\ref{fig:dd} therefore differ only by the children.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.8\linewidth]{double_descent.pdf}
+\caption{Model-wise double descent on CIFAR-10 ($n=4\,000$). Blue: the root MLP alone; orange: the
+tree built on that root, which always reaches 0\% training error. Dashed line: the smallest width at
+which the MLP itself interpolates.}
+\label{fig:dd}
+\end{figure}
+
+\paragraph{The root network shows a textbook double descent.} With 20\% noise (Fig.~\ref{fig:dd},
+left) the MLP's test error falls from 75.7\% ($H=1$) to 33.2\% ($H=8$), the classical sweet spot, then
+\emph{rises} to 53.8\% at $H=64$ -- precisely the first width whose training error is zero, where it has
+memorised all 815 corrupted labels -- and then falls again monotonically to 39.0\% at $H=4\,096$
+(307k parameters, $7.7\times$ more than $nK=40$k). The test cross-entropy peaks at the same width
+(7.7 vs 1.06 at $H=8$). With clean labels (right) the curve has the same shape but a smaller peak at a
+smaller width: 31.4\% at $H=8$, 37.7\% at the first interpolating width $H=32$, and 30.2\% at
+$H=2048$ -- here the over-parameterised branch ends \emph{below} the classical optimum. Noise moves the
+interpolation threshold to the right (noisy labels need more capacity to memorise) and makes the
+peak higher (memorising them at the threshold forces the least smooth interpolant).
+
+\paragraph{The tree never sees the classical regime.} For $H$ at or above the threshold the root
+interpolates on its own, no children are grown, and the two curves coincide -- including the peak,
+so the tree's own error-versus-width curve has the double-descent shape too, with its peak at the
+width at which the \emph{root} can just interpolate. Below the threshold the children force
+interpolation and the tree's error is almost flat (noisy: 47.2--48.5\% for $H=2$--32; clean:
+34.7--39.7\% for $H=2$--16), close to the error of the MLP just past its peak. Growing children is a
+second way to cross the interpolation threshold: instead of widening one network we add small ones
+until the data are memorised. Fig.~\ref{fig:ddp} places the trees on the parameter axis: for $H\ge2$ they hold 12k--95k
+parameters, one to two orders of magnitude more than their roots and as many as MLPs of width $H=256$--1024, and their
+test error is within a few points of those MLPs on the over-parameterised branch (noisy: 47--48\% vs
+40--44\%) -- not that of the small root they started from (33\% at $H=8$).
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.8\linewidth]{double_descent_params.pdf}
+\caption{The same runs against the number of parameters (log scale). Trees (squares, root width
+$H$ below the threshold) sit with the over-parameterised MLPs, not with their own small roots.}
+\label{fig:ddp}
+\end{figure}
+
+\paragraph{Children help an under-fitted root and hurt a well-fitted one.} At $H=1$--2 the root is
+far from the data and the children act as a boosting stage: with clean labels the tree on a
+width-1 root has 48.1\% error instead of 74.4\% (2\,916 test predictions fixed, 290 broken). From
+$H=4$ on, the root is close to its best test error and the children mostly memorise its residual --
+with noise, mostly the corrupted labels -- and break more than they fix (e.g.\ $H=8$, noisy: 296
+fixed, 1\,788 broken). Every tree memorises 100\% of the corrupted labels; the roots below the threshold memorise
+4--11\% of them ($H\le16$), rising to 39\% at $H=32$.
+
+\paragraph{Where does the label noise go?} We grew a tree on 10\,000 CIFAR-10 images with 20\%
+corrupted labels (ResNet trunk, $h=8$; 25 nodes, 100\% training accuracy, test accuracy 56.1\%$\to$50.7\%).
+Fig.~\ref{fig:noise} follows the corrupted labels through it. The root memorises 47\% of them by
+itself, but its training errors are 55\% corrupted labels against 20\% in the data -- the root learns
+the clean structure and leaves most of the noise to its children, whose first level is therefore
+mostly a \emph{noise memoriser}. Deeper nodes, which correct the detectors' own false alarms and
+misses, receive clean labels again (22\% at depth 2, none at depth 3). In this sense a tree separates
+signal (root) from memorisation (children) by construction, and \S\ref{sec:min} shows that removing
+children is the simplest way to recover the root's generalisation.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.5\linewidth]{noise_depth.pdf}
+\caption{Fraction of corrupted labels among the samples that each part of the tree must fire on
+(CIFAR-10, 10k images, 20\% symmetric noise).}
+\label{fig:noise}
+\end{figure}

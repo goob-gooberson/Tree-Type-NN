@@ -1,0 +1,94 @@
+%% ---------------------------------------------------------------------------------------
+\section{Receptive fields of nodes}
+\label{sec:rf}
+
+Since trunk, FeatureMap and node are all differentiable, the receptive field of node $v$ can be
+read off in image space. For each node we show (i) the six training images on which the node's own
+network $f_v$ responds most strongly (among the samples the node was trained on), (ii) the saliency
+$|\partial f_v/\partial x|$ of the top image~\cite{simonyan}, and (iii) the mean saliency map over up
+to 32 of the node's positives. We quantify the maps by the \emph{area-50} (the fraction of pixels
+needed to hold 50\% of the saliency mass; 0.5 would be uniform) and the \emph{centre mass} (saliency
+inside the central quarter of the image; 0.25 would be uniform).
+
+\begin{figure}[p]
+\centering
+\includegraphics[width=0.74\linewidth]{rf_catsdogs_cnn_binary_h8_n0.0_nodes0.png}\\[2pt]
+\includegraphics[width=0.74\linewidth]{rf_catsdogs_cnn_binary_h8_n0.0_nodes1.png}
+\caption{Receptive fields of the Cats vs Dogs tree of Fig.~\ref{fig:treecd} (CNN trunk). Rows are
+nodes (path, kind, number of positives), ordered by depth; R fires for ``dog'', R.A fixes missed dogs,
+R.B fixes cats taken for dogs, and so on. Columns: the six training images with the largest response
+of the node's own network, the saliency of the top image (overlay), and the mean saliency over the
+node's positives. Note R.B.A.A.B, a node with two positives whose top image is a rescue-centre logo
+filed under ``dog''.}
+\label{fig:rfcd}
+\end{figure}
+
+\begin{figure}[p]
+\centering
+\includegraphics[width=0.85\linewidth]{rf_cifar10_cnn_corrector_h8_n0.0_root.png}
+\caption{Per-class receptive fields of the CIFAR-10 root (CNN trunk): the class logit's top
+training images, the saliency of the top image, and the mean saliency over correctly classified images
+of that class.}
+\label{fig:rfroot}
+\end{figure}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{rf_depth.pdf}
+\caption{Receptive-field statistics against depth. Left: area-50 of the saliency (largest four nodes
+per depth; dotted: uniform map); it is set by the trunk, not by depth. Right: fraction of each depth's
+positives on which every hidden unit of the node is silent, so that the node fires by its output bias
+alone (all nodes; depths with fewer than 10 positives omitted).}
+\label{fig:rfdepth}
+\end{figure}
+
+\paragraph{Roots are object-centred class templates.} The root's top images are canonical, centred
+exemplars -- frontal dog faces on Cats vs Dogs (Fig.~\ref{fig:rfcd}, row R); side-on cars, trucks
+and ships and close-up cat faces on CIFAR-10 (Fig.~\ref{fig:rfroot}) -- and its saliency is a compact
+blob in the middle of the image (Cats vs Dogs, CNN trunk: half of the saliency lies in 19\% of the
+pixels, and 38\% of it in the central quarter). With the
+scratch CNN the saliency of every class is a centred disc; with the ImageNet trunk it is broader and
+shows the bilinear up-sampling grid of the $32\to128$ resize, a reminder that a transferred trunk
+looks at the image at a scale it was not trained for.
+
+\paragraph{First-level children respond to atypical members of a class.} R.A (missed dogs) responds
+to dogs that look unlike the root's template: puppies held in someone's arms, dark-coated dogs,
+dogs behind bars. R.B (cats taken for dogs) responds to images whose context says ``dog'' -- a
+dalmatian on a chequered cloth, a long-haired black-and-white animal -- i.e.\ these nodes encode
+\emph{exceptions} to the root's rule, as the note's construction intends.
+
+\paragraph{Deep nodes memorise idiosyncratic photographs.} Two or three levels further down, the
+top images are cluttered, multi-object, or barely about the class at all: people holding cats, a dog
+and a cat on one sofa, a Santa Claus picture (R.B.B), and at R.B.A.A.B a rescue-centre logo that the
+dataset files under ``dog''. These are the long tail and the label errors of the dataset, and the tree
+isolates them in its deepest nodes.
+
+\paragraph{The trunk, not the depth, sets the spatial extent.} Perhaps surprisingly, the saliency of
+deep nodes is \emph{not} more diffuse than the root's (Fig.~\ref{fig:rfdepth}, left): with the CNN trunk
+half of the saliency lies in 19--22\% of the pixels at every depth, with the ResNet trunk in 25--28\%,
+with pixels in 25--29\%. (Our first analysis suggested widening fields; it was an artefact of images on
+which a node's gradient is exactly zero, which we now exclude -- and which turned out to be the real
+story, below.) With pixel features even the root is not object-centred (Cats vs Dogs: 24\% of the
+saliency in the central quarter, i.e.\ uniform, against 38\% with the CNN trunk): every pixel node keys on
+global colour layout, which is why pixel trees generalise poorly.
+
+\paragraph{Deep nodes recognise their positives by exclusion.} What does change with depth is
+\emph{how} a node recognises its positives (Fig.~\ref{fig:rfdepth}, right). For a growing fraction of
+a deep node's positives \emph{all} of its hidden units are silent, so the node fires on them purely
+through a positive output bias, while almost none of its negatives ($\le$2\%) are in that state. With
+the CNN trunk on CIFAR-10 this fraction rises from 1\% of the positives at depths 1--2 to 13\%, 24\% and
+52\% at depths 3, 4 and 5 (Cats vs Dogs: 0.6\%$\to$7\%$\to$18\%). Such a node's hidden units are
+\emph{veto} detectors that tile its negatives -- in R.A.A, 6 of 8 output weights are negative and the
+output bias is $+0.92$ -- and the positives are simply ``whatever no veto recognises''. On these images
+the input gradient is exactly zero: the node has no receptive field for what it detects, only for what
+it rejects. A ``fire unless vetoed'' rule is the natural way for a small network to single out a few
+points among thousands, and it generalises badly by design: any test image unlike all of the node's
+training negatives triggers it.
+
+\paragraph{Learned correctors over-generalise; isolation nodes do not.} The receptive fields explain
+the fixed/broken column of \S\ref{sec:results} quantitatively. By construction, every CIFAR-10 detector
+$D_k$ fires on \emph{none} of the training images of other classes, yet it fires on 1.9\% (ResNet) /
+0.9\% (CNN) of the \emph{test} images of other classes -- each firing a candidate ``broken''
+prediction -- while catching only 12\% / 8\% of the root's test errors on its own class. The
+isolation-node detectors fire on 0.00\% of other-class test images and catch 0.4\% of the errors:
+useless, but harmless.

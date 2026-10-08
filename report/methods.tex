@@ -1,0 +1,90 @@
+%% ---------------------------------------------------------------------------------------
+\section{From the note to a tree of neural networks}
+\label{sec:method}
+
+\subsection{The binary node problem}
+Let node $v$ receive the samples $\mathcal{D}_v=\{(x^i,y_i)\}$, $y_i\in\{0,1\}$, and let
+$f_v(x;\theta_v)$ be a small neural network (an MLP $d\!\to\!h\!\to\!1$; $h=0$ gives the single
+linear-threshold neuron of the note). The note's problem (1)--(3) minimises the sum of slacks
+$q_i\ge 0$ subject to $(2y_i-1)(w^Tx^i+b)+q_i\ge 1$. Eliminating $q_i$ gives the hinge loss, so the
+neural node solves
+\begin{equation}
+  \min_{\theta_v}\; \sum_{i\in\mathcal{D}_v} c_i\, \max\bigl(0,\;1-(2y_i-1)\,f_v(x^i;\theta_v)\bigr),
+  \qquad c_i=\begin{cases} \sqrt{n_-/n_+} & y_i=1\\ 1 & y_i=0\end{cases}
+  \label{eq:node}
+\end{equation}
+by Adam. The class weights $c_i$ are the one change we had to make to the note's objective:
+child problems are extremely imbalanced (e.g.\ 46 positives among 1\,239 samples), and the unweighted
+problem is solved by the trivial ``never fire'' network, which makes no progress. Linear children
+fail the other way: with balanced weights they catch most positives but at 10--20$\times$ as many
+false alarms (\S\ref{sec:results}). For linear nodes we use fully balanced
+weights $c_i\propto 1/n_{y_i}$. ``Don't care'' samples (the X entries of Table~II) are simply left
+out of $\mathcal{D}_v$.
+
+\subsection{Children, connection weights and the LP (6)--(9)}
+With $z_i=f_v(x^i)$ the categories of Table~I are $C_1:\{z<0,y=0\}$, $C_2:\{z\ge 0,y=1\}$,
+$C_3:\{z<0,y=1\}$ (missed) and $C_4:\{z\ge 0,y=0\}$ (false alarm). Following Table~II,
+child $A$ is grown on $C_1\cup C_3\cup C_4$ with target $\mathbf{1}[C_3]$ and child $B$ on
+$C_2\cup C_3\cup C_4$ with target $\mathbf{1}[C_4]$, each by the same procedure recursively, so that
+each returns a binary output $a(x),b(x)\in\{0,1\}$ that is \emph{exactly} correct on its own samples.
+The corrected net input of $v$ is
+\begin{equation}
+  \tilde z(x)=f_v(x)+w_A\,a(x)+w_B\,b(x),\qquad w_A\ge 0,\; w_B\le 0. \label{eq:corr}
+\end{equation}
+\textbf{Closed form of the LP.} If the node's own network is kept fixed, constraints (7)--(9) of the
+note with $q_i=0$ read $z_i+w_A\ge 1$ for $i\in C_3$ and $z_i+w_B\le -1$ for $i\in C_4$ (all other
+constraints are already satisfied because $a=0$ on $C_1\cup C_4$ and $b=0$ on $C_2\cup C_3$, and the
+sign constraints make the don't-care firings harmless). Hence the minimal-magnitude solution is
+\begin{equation}
+  w_A=\max_{i\in C_3}\,(\delta-z_i),\qquad w_B=-\max_{i\in C_4}\,(\delta+z_i),\qquad \delta=1, \label{eq:closed}
+\end{equation}
+which we use by default; it shows that the slack variables are indeed redundant, as the note remarks.
+Optionally (\texttt{--resolve lp}) we re-solve the \emph{whole output layer} of $f_v$ together with
+$(w_A,w_B)$ as the LP (6)--(9), with the hidden activations of $f_v$ playing the role of $x$, and
+an optional $\ell_1$ term on the output weights to minimise the number of non-zero weights.
+
+\textbf{Why the LP can fail numerically (note's question).} A zero-slack solution exists only if the
+children are exactly right on their samples; in practice an LP returns non-zero slacks when (i) a
+child is not exactly correct (finite training, early stopping), (ii) two samples have identical
+features but conflicting labels (exact duplicates / label noise -- no tree can separate them),
+(iii) the solver's feasibility tolerance ($\sim10^{-7}$) is larger than the margins created by
+nearly-collinear features, or (iv) huge connection weights make the problem badly scaled.
+
+\subsection{Termination: isolation nodes}
+Recursion stops when a child's problem is solved exactly. To guarantee this we use a closed-form
+fallback, the \emph{isolation node}: a two-layer threshold network whose hidden units are spherical
+caps $h_j(x)=\mathbf{1}[\langle \hat x, \hat c_j\rangle\ge\tau_j]$ ($\hat{\cdot}$ = L2 normalisation)
+and whose output is $\mathrm{OR}_j\,h_j$. Centres $\hat c_j$ are positives chosen greedily and
+$\tau_j$ is the max-margin threshold half-way between the closest negative and the centre.
+Because every point of a set of distinct unit vectors is an extreme point of its convex hull,
+\emph{every training point can be cut off from all others by a single hyperplane} -- the
+high-dimensional version of the hand-built hyperplanes of Fig.~4 of the note. A child is replaced by
+an isolation node when (a) its trained network fixes none of its positives (the trivial solution), (b) it
+makes more than $3\times$ as many errors as it was asked to fix, or (c) depth exceeds 10. Only exact
+duplicates with conflicting labels can then stop the tree from reaching 100\% training accuracy.
+
+\subsection{Multiclass trees}
+\label{sec:multiclass}
+We implemented three extensions (the note's open questions 2--3):
+\begin{itemize}[leftmargin=*,itemsep=1pt]
+\item \textbf{One-vs-rest forest (OvR):} $K$ binary trees; prediction $\arg\max_k \tilde z_k(x)$.
+  On the training set exactly one tree fires, so it interpolates. Cost: $K$ roots.
+\item \textbf{Corrector tree} (our generalisation of Table~II): a single $K$-way root $f(x)\in\mathbb{R}^K$
+  trained with cross-entropy. For every class $k$ with errors we grow a binary \emph{detector} $D_k$
+  with
+  \begin{center}\small
+  \begin{tabular}{lccc}
+  \toprule
+  sample & root correct & root wrong & \\\midrule
+  true class $=k$ & X (don't care) & 1 & \\
+  true class $\ne k$ & 0 & 0 &\\\bottomrule
+  \end{tabular}
+  \end{center}
+  and logits $\tilde z_k(x)=f_k(x)+w_k D_k(x)$ with $w_k=\max_{i:\,\text{wrong},\,y_i=k}\,(\max_j f_j(x^i)-f_k(x^i))+\delta$.
+  A sample of class $y$ can only be boosted by $D_y$, so the correction never harms another class on the
+  training set. For $K=2$ this \emph{is} Table~II ($D_1=A$, $D_0=B$). At most $K$ children, but only
+  for classes that have errors.
+\item \textbf{Gated tree:} a $K$-way node $g$, an error detector $E$ (a binary tree on all of the node's
+  samples with target ``$g$ is wrong'') and a re-classifier $R$ (a gated tree trained \emph{only} on $g$'s errors);
+  output $R(x)$ if $E(x)=1$ else $g(x)$. Two children per node independent of $K$; $R$'s data shrink geometrically.
+\end{itemize}

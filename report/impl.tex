@@ -1,0 +1,30 @@
+%% ---------------------------------------------------------------------------------------
+\section{Implementation}
+\label{sec:impl}
+The code (PyTorch, $\approx$2\,000 lines) is organised as a small library \texttt{treenn/} plus
+experiment scripts; Table~\ref{tab:impl} lists the settings used throughout. All experiments ran on a
+2-core CPU without a GPU, which is why the trunks are frozen and features are cached once: growing a
+complete CIFAR-10 tree then takes 2--10 minutes.
+
+\begin{table}[h]
+\centering\small
+\caption{Settings used for every tree unless stated otherwise.}
+\label{tab:impl}
+\begin{tabular}{@{}l>{\raggedright\arraybackslash}p{0.78\linewidth}@{}}
+\toprule
+Data & CIFAR-10: 50\,000 / 10\,000 ($32{\times}32$). Cats vs Dogs (Kaggle): 19\,989 / 5\,000, resized + centre-cropped to $64{\times}64$\\
+FeatureMap & standardise $\to$ PCA (128 components, fit on the training set) $\to$ standardise\\
+Root ($K$-way) & MLP $128\!\to\!64\!\to\!K$, cross-entropy, Adam (lr $10^{-2}$), 100 epochs, batch 8192\\
+Binary nodes & MLP $128\!\to\!h\!\to\!1$ ($h=8$ unless stated; $h=0$: single neuron), weighted hinge \eqref{eq:node}, Adam (lr $10^{-2}$), up to 300 epochs, early stop as soon as the node makes zero errors\\
+Connection weights & closed form \eqref{eq:closed}, $\delta=1$ (LP (6)--(9) via HiGHS when \texttt{--resolve lp})\\
+Isolation fallback & child fixes none of its positives, or makes $>3\times$ the errors it was asked to fix, or depth $>10$\\
+CNN trunk & 6 conv layers, SGD+Nesterov, one-cycle lr 0.05, wd $5\cdot10^{-4}$, batch 128, 15 epochs, crop+flip\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\noindent\textbf{Bookkeeping.} Every node stores the indices of the samples it was trained on and its
+targets, so after training we can (i) check that the tree is exactly correct on every training
+sample, (ii) attribute test-time changes of the prediction to individual children, (iii) prune nodes
+while provably preserving training decisions (\S\ref{sec:min}), and (iv) visualise each node's
+receptive field on the images it is responsible for (\S\ref{sec:rf}).

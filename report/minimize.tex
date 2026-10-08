@@ -1,0 +1,67 @@
+%% ---------------------------------------------------------------------------------------
+\section{Minimising the size of the network}
+\label{sec:min}
+
+``Size'' can be minimised at four levels; we tried all four and report parameters (or non-zero
+weights) of everything below the trunk.
+
+\paragraph{1. Design choices that shrink the tree at equal (100\%) training accuracy.}
+(a) \emph{Node width} has an interior optimum (Table~\ref{tab:width}): linear or width-2 children
+make no progress and fall back to isolation nodes that need one 129-parameter cap per memorised
+image (0.84--1.03M parameters), very wide children are expensive per node (259k at $h=128$), and
+$h=8$--32 gives the smallest trees (78--80k). (b) \emph{Sharing the root} across classes: the corrector
+tree needs half the parameters of the one-vs-rest forest (Table~\ref{tab:archs}). (c) \emph{Letting
+each node choose its trunk} gives the largest reduction we found: 144k$\to$44k parameters
+(83$\to$35 nodes) on CIFAR-10 at higher test accuracy (Table~\ref{tab:main}).
+
+\paragraph{2. Decision-preserving pruning.} For every node we search the highest sparsity
+$s$ among 0.5, 0.8, 0.9, 0.95, 0.98 and 0.99 at which magnitude pruning~\cite{lottery} followed by a short masked
+fine-tune leaves the node's decision on \emph{every one of its training samples} unchanged.
+Because a node's decisions define its children's training sets (Table~II), this preserves the whole
+tree's 100\% training accuracy by construction; only the connection weights are recomputed with
+\eqref{eq:closed}. Table~\ref{tab:prune} shows 20--32\% fewer non-zero weights at unchanged training
+accuracy and test accuracy within $\pm0.1$ points. The prunability is very uneven: nodes that serve a
+few hundred samples prune to 80--95\% sparsity, while the root and the first-level detectors (which
+must keep 45--50k decisions exactly) cannot be pruned even to 50\%. Pruning also performs the note's
+\emph{feature selection} (open question 5): the sparsest nodes read only 34--40 of the 128 PCA features.
+
+\begin{table}[h]
+\centering\small
+\caption{Decision-preserving pruning: every node keeps every training decision, so the tree stays at
+100\% training accuracy.}
+\label{tab:prune}
+\resizebox{\linewidth}{!}{\input{tables/prune.tex}}
+\end{table}
+
+\paragraph{3. The smallest interpolating network sits at the double-descent peak.}
+If ``minimise the size'' is taken literally -- the fewest parameters subject to 100\% training
+accuracy -- the double-descent sweep answers it (Table~\ref{tab:smallest}): the smallest interpolating
+model is a \emph{single} MLP of exactly the threshold width (2.4k parameters with clean labels,
+4.8k with noise), smaller than any tree, and it is the \emph{worst} of all interpolating MLPs on test data
+(37.7\% and 53.8\% error). Trees are 3--5$\times$ larger but 3--6 points better, and the best
+interpolating model is $64\times$ larger than the smallest one. Minimum size and good generalisation are
+opposite goals once 100\% training accuracy is imposed.
+
+\begin{table}[h]
+\centering\small
+\caption{Interpolating models in the double-descent sweep (CIFAR-10, $n=4\,000$). The best test
+error at any width is 30.2\% (clean; an interpolating MLP) and 33.2\% (noisy; a non-interpolating MLP, $H=8$).}
+\label{tab:smallest}
+\input{tables/smallest.tex}
+\end{table}
+
+\paragraph{4. Cost-complexity pruning of subtrees.} Dropping the 100\% requirement, we repeatedly
+remove the subtree that fixes the fewest training samples per parameter (as in CART pruning).
+Fig.~\ref{fig:prune} traces the resulting path from the full tree to the bare root: test accuracy
+changes almost linearly with training accuracy, losing 0.3--0.5 points of test accuracy for every
+point of training accuracy the subtrees add. On these datasets the best tree for \emph{test}
+accuracy is the root alone, and on Cats vs Dogs (CNN) a 1\,041-parameter root achieves 94.1\% test
+accuracy, 2 points better than the 17-node interpolating tree.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.55\linewidth]{prune_curve.pdf}
+\caption{Cost-complexity pruning, read from right (full tree, 100\% training accuracy) to left (root
+only). Each point removes one more subtree.}
+\label{fig:prune}
+\end{figure}

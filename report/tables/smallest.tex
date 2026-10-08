@@ -1,0 +1,10 @@
+\begin{tabular}{@{}llrr@{}}\toprule
+labels & interpolating model & parameters & test error\\\midrule
+clean & smallest single MLP ($H$=32) & 2\,410 & 37.7\%\\
+ & smallest tree ($H$=8; 23 nodes) & 12\,248 & 34.9\%\\
+ & best interpolating model (MLP, $H$=2048) & 153\,610 & 30.2\%\\
+\midrule
+20\% noisy & smallest single MLP ($H$=64) & 4\,810 & 53.8\%\\
+ & smallest tree ($H$=8; 31 nodes) & 16\,480 & 48.2\%\\
+ & best interpolating model (MLP, $H$=4096) & 307\,210 & 39.0\%\\
+\bottomrule\end{tabular}

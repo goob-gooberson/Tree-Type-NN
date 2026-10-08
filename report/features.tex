@@ -1,0 +1,30 @@
+%% ---------------------------------------------------------------------------------------
+\section{Providing features to the tree}
+\label{sec:features}
+
+A tree of small MLPs on raw $32{\times}32{\times}3$ or $64{\times}64{\times}3$ pixels can be grown to
+100\% training accuracy, but every node then has to rediscover edges, colours and parts, and nodes
+that only see pixels generalise poorly (\S\ref{sec:results}). We therefore separate
+\emph{representation} from \emph{decision}: a frozen \emph{trunk} maps an image to a feature vector,
+a fixed \emph{FeatureMap} standardises it and projects it onto its top principal components
+(128 by default), and every node of the tree is a small network on this vector. Because the
+FeatureMap is a fixed differentiable linear map, every node remains a differentiable function of the
+\emph{image}, which is what we use to visualise receptive fields (\S\ref{sec:rf}).
+
+We compare four ways of providing features (Fig.~\ref{fig:arch}):
+\begin{enumerate}[leftmargin=*,itemsep=1pt]
+\item \textbf{Pixels} -- no trunk; the image is area-downsampled to $16{\times}16$ (768-d) before PCA.
+\item \textbf{Scratch CNN trunk} -- a 6-layer VGG-style CNN (32-64-128 channels, 0.29\,M parameters;
+      stride-2 first layer for $64{\times}64$ inputs) trained from scratch on each dataset with
+      crop/flip augmentation for 15 epochs, then frozen; 128-d global-average-pooled features.
+\item \textbf{Transfer trunk} -- an ImageNet-1k ResNet-18 (\texttt{timm} \emph{a1} weights), frozen;
+      images are resized to $128{\times}128$; 512-d pooled features. This trunk has never seen the
+      target training set, so it cannot have memorised it.
+\item \textbf{A set of trunks with per-node selection} -- both trunks are given their own FeatureMap, and
+      \emph{every node trains one candidate network per trunk and keeps the one with the lowest
+      training error}. This is node-level feature (block) selection, the note's open question 5.
+\end{enumerate}
+\textbf{A trap: features that have already memorised the data.} A trunk trained on the very samples
+the tree must fit has partially memorised them; the tree then appears small and ``easy'' simply because
+the overfitting happened in the trunk. To measure this we also trained the CNN trunk on a fixed half
+$S_A$ of CIFAR-10 and grew one tree on $S_A$ and one on the unseen half $S_B$ (\S\ref{sec:results}).

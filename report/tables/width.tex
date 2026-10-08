@@ -1,0 +1,11 @@
+\begin{tabular}{@{}lrrrrrrrr@{}}\toprule
+ & \multicolumn{2}{c}{root acc. (\%)} & \multicolumn{2}{c}{tree acc. (\%)} & nodes & & & test fixed/\\
+\cmidrule(lr){2-3}\cmidrule(lr){4-5}
+configuration & train & test & train & test & (isol.) & params & depth & broken\\\midrule
+$h=0$ (linear $\to$ all isolation) & 84.2 & 74.5 & 100.0 & \textbf{74.6} & 11 (10) & 1027.5k & 1 & 10/0\\
+$h=2$ & 84.2 & 74.5 & 100.0 & \textbf{73.3} & 93 (13) & 842.2k & 8 & 101/224\\
+$h=8$ & 84.2 & 74.5 & 100.0 & \textbf{69.8} & 67 (0) & 77.6k & 4 & 256/729\\
+$h=32$ & 84.2 & 74.5 & 100.0 & \textbf{70.7} & 18 (0) & 79.6k & 2 & 277/653\\
+$h=128$ & 84.2 & 74.5 & 100.0 & \textbf{72.6} & 16 (0) & 258.5k & 2 & 284/475\\
+isolation nodes only & 84.2 & 74.5 & 100.0 & \textbf{74.6} & 11 (10) & 1027.5k & 1 & 10/0\\
+\bottomrule\end{tabular}

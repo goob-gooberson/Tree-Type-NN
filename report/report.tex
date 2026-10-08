@@ -1,0 +1,64 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[margin=2.1cm]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usepackage{enumitem}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage[expansion=false]{microtype}
+\usepackage[colorlinks=true,linkcolor=blue!50!black,citecolor=blue!50!black,urlcolor=blue!50!black]{hyperref}
+\captionsetup{font=small,labelfont=bf}
+\graphicspath{{../figures/}{figures/}}  % ../figures when built in the repo, figures/ on Overleaf
+\setlist{itemsep=1pt,topsep=3pt}
+
+\newcommand{\pend}[1]{\textcolor{red}{[#1]}}
+%% ---- fill these in -------------------------------------------------------------------
+\newcommand{\authorname}{Your Name (Entry No.)}
+\newcommand{\githuburl}{https://github.com/YOUR-USERNAME/tree-type-nn}
+%% ---------------------------------------------------------------------------------------
+
+\title{\textbf{Tree-type networks of small neural networks}\\[2pt]
+\large Interpolation, double descent and receptive fields on CIFAR-10 and Cats vs Dogs}
+\author{\authorname\\[2pt]\small Code: \url{\githuburl} \;(private repository)}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\input{abstract}
+\input{intro}
+\input{methods}
+\input{arch}
+\input{features}
+\input{impl}
+\input{results}
+\input{dd}
+\input{rf}
+\input{minimize}
+\input{conclusions}
+
+\bibliographystyle{plain}
+\begin{thebibliography}{99}\small
+\bibitem{note} Jayadeva. \emph{A tree type neural network}. Course note, 2021.
+\bibitem{martinelli} G.~Martinelli, L.~P.~Ricotti, S.~Ragazzini, F.~Mascioli. A pyramidal delayed perceptron. \emph{IEEE Trans.\ Circuits and Systems}, 37(9):1176--1181, 1990.
+\bibitem{weston} J.~Weston, A.~Elisseeff, B.~Sch\"olkopf, M.~Tipping. Use of the zero-norm with linear models and kernel methods. \emph{JMLR}, 3:1439--1461, 2003.
+\bibitem{svmtree} A.~K.~Deb, Jayadeva, S.~Chandra. Binary classification by SVM based tree type neural networks. \emph{Proc.\ IJCNN}, 2002.
+\bibitem{belkin} M.~Belkin, D.~Hsu, S.~Ma, S.~Mandal. Reconciling modern machine-learning practice and the classical bias--variance trade-off. \emph{PNAS}, 116(32), 2019.
+\bibitem{nakkiran} P.~Nakkiran, G.~Kaplun, Y.~Bansal, T.~Yang, B.~Barak, I.~Sutskever. Deep double descent: where bigger models and more data hurt. \emph{ICLR}, 2020.
+\bibitem{zhang} C.~Zhang, S.~Bengio, M.~Hardt, B.~Recht, O.~Vinyals. Understanding deep learning requires rethinking generalization. \emph{ICLR}, 2017.
+\bibitem{feldman} V.~Feldman. Does learning require memorization? A short tale about a long tail. \emph{STOC}, 2020.
+\bibitem{bartlett} P.~L.~Bartlett, P.~M.~Long, G.~Lugosi, A.~Tsigler. Benign overfitting in linear regression. \emph{PNAS}, 117(48), 2020.
+\bibitem{schapire} R.~E.~Schapire, Y.~Freund, P.~Bartlett, W.~S.~Lee. Boosting the margin: a new explanation for the effectiveness of voting methods. \emph{Annals of Statistics}, 26(5), 1998.
+\bibitem{simonyan} K.~Simonyan, A.~Vedaldi, A.~Zisserman. Deep inside convolutional networks: visualising image classification models and saliency maps. \emph{ICLR Workshop}, 2014.
+\bibitem{lottery} J.~Frankle, M.~Carbin. The lottery ticket hypothesis: finding sparse, trainable neural networks. \emph{ICLR}, 2019.
+\bibitem{mcm} Jayadeva. Learning a hyperplane classifier by minimizing an exact bound on the VC dimension. \emph{Neurocomputing}, 149:683--689, 2015.
+\bibitem{timm} R.~Wightman, H.~Touvron, H.~J\'egou. ResNet strikes back: an improved training procedure in timm. \emph{arXiv:2110.00476}, 2021.
+\end{thebibliography}
+
+\appendix
+\input{appendix}
+\end{document}

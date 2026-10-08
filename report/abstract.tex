@@ -1,0 +1,20 @@
+\begin{abstract}\noindent
+We revisit the tree-type neural network of the course note, in which a node's misclassified
+samples are corrected by two child neurons and the children are grown recursively until the
+training set is learned exactly, and replace every neuron by a small neural network. We give the
+node problem as a neural version of the note's slack-minimisation LP, derive the closed-form solution
+of the connection-weight LP, add a closed-form \emph{isolation node} that guarantees termination,
+and generalise Table~II to $K$ classes in three ways. Nodes read features from frozen trunks
+(pixels, a CNN trained from scratch, an ImageNet ResNet-18, or a per-node choice between trunks).
+Every tree reaches \textbf{100\% training accuracy} on CIFAR-10 (50k images) and Cats vs Dogs (20k
+images). The central finding is that \emph{how} a tree interpolates decides what interpolation costs:
+learned neural correctors generalise their corrections and break two to three test predictions for
+every one they fix (CIFAR-10: 84.8\%$\to$81.8\%), whereas closed-form isolation nodes interpolate
+benignly (74.5\%$\to$74.6\%) but need one hidden unit per memorised image. With 20\% label noise the
+root network shows a textbook double descent (test error 33\%$\to$54\%$\to$39\%, peak exactly where it
+first interpolates); the tree interpolates at every width and lands on the over-parameterised branch
+of the same curve. Receptive fields keep the trunk's spatial scale at every depth, but deep nodes memorise atypical,
+cluttered or mislabelled photographs and increasingly recognise them by exclusion: their hidden units
+veto the negatives and the positives are fired by the output bias alone. Decision-preserving pruning,
+cost-complexity pruning and per-node trunk selection shrink the network substantially.
+\end{abstract}
