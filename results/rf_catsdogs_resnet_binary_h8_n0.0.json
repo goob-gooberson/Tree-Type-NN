@@ -1,0 +1,67 @@
+[
+ {
+  "name": "R (mlp, 9989+)",
+  "depth": 0,
+  "kind": "mlp",
+  "area50": 0.24715423583984375,
+  "area50_meanmap": 0.4013671875,
+  "centre": 0.32049426436424255,
+  "fire_train": 0.4977237582206726,
+  "fire_test": 0.5027999877929688,
+  "n_pos": 32,
+  "grad_input_cos": 0.00041669083293527365,
+  "frac_zero_grad": 0.0
+ },
+ {
+  "name": "R.A (mlp, 226+)",
+  "depth": 1,
+  "kind": "mlp",
+  "area50": 0.24455122649669647,
+  "area50_meanmap": 0.641845703125,
+  "centre": 0.3003285229206085,
+  "fire_train": 0.02258947864174843,
+  "fire_test": 0.06939999759197235,
+  "n_pos": 32,
+  "grad_input_cos": -0.00038098159711807966,
+  "frac_zero_grad": 0.3125
+ },
+ {
+  "name": "R.B (mlp, 186+)",
+  "depth": 1,
+  "kind": "mlp",
+  "area50": 0.2510523200035095,
+  "area50_meanmap": 0.462646484375,
+  "centre": 0.3109186887741089,
+  "fire_train": 0.01857493817806244,
+  "fire_test": 0.05820000171661377,
+  "n_pos": 32,
+  "grad_input_cos": 0.0001300947042182088,
+  "frac_zero_grad": 0.09375
+ },
+ {
+  "name": "R.A.B (mlp, 5+)",
+  "depth": 2,
+  "kind": "mlp",
+  "area50": 0.23979492485523224,
+  "area50_meanmap": 0.358154296875,
+  "centre": 0.3062296509742737,
+  "fire_train": 0.021645022556185722,
+  "fire_test": 0.13459999859333038,
+  "n_pos": 5,
+  "grad_input_cos": 0.0011306855594739318,
+  "frac_zero_grad": 0.0
+ },
+ {
+  "name": "R.B.B (mlp, 3+)",
+  "depth": 2,
+  "kind": "mlp",
+  "area50": 0.25,
+  "area50_meanmap": 0.338134765625,
+  "centre": 0.3211148679256439,
+  "fire_train": 0.01587301678955555,
+  "fire_test": 0.11219999939203262,
+  "n_pos": 3,
+  "grad_input_cos": 0.0006840159185230732,
+  "frac_zero_grad": 0.0
+ }
+]

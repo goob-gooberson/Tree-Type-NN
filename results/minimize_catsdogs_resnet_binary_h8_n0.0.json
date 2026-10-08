@@ -1,0 +1,94 @@
+{
+ "tag": "catsdogs_resnet_binary_h8_n0.0",
+ "subtree_curve": [
+  {
+   "params": 5205,
+   "nodes": 5,
+   "train": 1.0,
+   "test": 0.9323999881744385
+  },
+  {
+   "params": 4164,
+   "nodes": 4,
+   "train": 0.9998499155044556,
+   "test": 0.9323999881744385
+  },
+  {
+   "params": 3123,
+   "nodes": 3,
+   "train": 0.9995997548103333,
+   "test": 0.932200014591217
+  },
+  {
+   "params": 2082,
+   "nodes": 2,
+   "train": 0.9904447197914124,
+   "test": 0.9319999814033508
+  },
+  {
+   "params": 1041,
+   "nodes": 1,
+   "train": 0.9793886542320251,
+   "test": 0.9344000220298767
+  }
+ ],
+ "prune": {
+  "nnz_before": 5205,
+  "nnz_after": 4173,
+  "rows": [
+   {
+    "path": "R",
+    "depth": 0,
+    "before": 1041,
+    "after": 1041,
+    "sparsity": 0.0
+   },
+   {
+    "path": "R.A",
+    "depth": 1,
+    "before": 1041,
+    "after": 1041,
+    "sparsity": 0.0
+   },
+   {
+    "path": "R.A.B",
+    "depth": 2,
+    "before": 1041,
+    "after": 525,
+    "sparsity": 0.5
+   },
+   {
+    "path": "R.B",
+    "depth": 1,
+    "before": 1041,
+    "after": 1041,
+    "sparsity": 0.0
+   },
+   {
+    "path": "R.B.B",
+    "depth": 2,
+    "before": 1041,
+    "after": 525,
+    "sparsity": 0.5
+   }
+  ],
+  "train_acc": 1.0,
+  "test_acc": 0.9323999881744385,
+  "test_acc_before": 0.9323999881744385,
+  "features_used_before": [
+   128,
+   128,
+   128,
+   128,
+   128
+  ],
+  "features_used_after": [
+   128,
+   128,
+   128,
+   128,
+   128
+  ],
+  "secs": 2.272853374481201
+ }
+}

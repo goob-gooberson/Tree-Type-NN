@@ -1,0 +1,289 @@
+{
+ "tag": "cifar10_resnet_corrector_h32_n0.0",
+ "subtree_curve": [
+  {
+   "params": 79643,
+   "nodes": 17,
+   "train": 1.0,
+   "test": 0.7074999809265137
+  },
+  {
+   "params": 75482,
+   "nodes": 16,
+   "train": 0.9999799728393555,
+   "test": 0.7074999809265137
+  },
+  {
+   "params": 71321,
+   "nodes": 15,
+   "train": 0.9999799728393555,
+   "test": 0.7074999809265137
+  },
+  {
+   "params": 67160,
+   "nodes": 14,
+   "train": 0.9999399781227112,
+   "test": 0.7075999975204468
+  },
+  {
+   "params": 62999,
+   "nodes": 13,
+   "train": 0.9998599886894226,
+   "test": 0.7075999975204468
+  },
+  {
+   "params": 58838,
+   "nodes": 12,
+   "train": 0.9995599985122681,
+   "test": 0.7075999975204468
+  },
+  {
+   "params": 54677,
+   "nodes": 11,
+   "train": 0.9990000128746033,
+   "test": 0.7073000073432922
+  },
+  {
+   "params": 50516,
+   "nodes": 10,
+   "train": 0.9984800219535828,
+   "test": 0.7074999809265137
+  },
+  {
+   "params": 46355,
+   "nodes": 9,
+   "train": 0.9883999824523926,
+   "test": 0.7074999809265137
+  },
+  {
+   "params": 42194,
+   "nodes": 8,
+   "train": 0.9781799912452698,
+   "test": 0.7092999815940857
+  },
+  {
+   "params": 38033,
+   "nodes": 7,
+   "train": 0.9679999947547913,
+   "test": 0.7109000086784363
+  },
+  {
+   "params": 33872,
+   "nodes": 6,
+   "train": 0.9570000171661377,
+   "test": 0.7134000062942505
+  },
+  {
+   "params": 29711,
+   "nodes": 5,
+   "train": 0.944320023059845,
+   "test": 0.7134000062942505
+  },
+  {
+   "params": 25550,
+   "nodes": 4,
+   "train": 0.9315400123596191,
+   "test": 0.7135999798774719
+  },
+  {
+   "params": 21389,
+   "nodes": 3,
+   "train": 0.9128400087356567,
+   "test": 0.7208999991416931
+  },
+  {
+   "params": 17228,
+   "nodes": 2,
+   "train": 0.8912400007247925,
+   "test": 0.7267000079154968
+  },
+  {
+   "params": 13067,
+   "nodes": 1,
+   "train": 0.8679999709129333,
+   "test": 0.7351999878883362
+  },
+  {
+   "params": 8906,
+   "nodes": 0,
+   "train": 0.8419600129127502,
+   "test": 0.7451000213623047
+  }
+ ],
+ "prune": {
+  "nnz_before": 79643,
+  "nnz_after": 55289,
+  "rows": [
+   {
+    "path": "R",
+    "depth": 0,
+    "before": 8906,
+    "after": 8906,
+    "sparsity": 0.0
+   },
+   {
+    "path": "D0",
+    "depth": 1,
+    "before": 4161,
+    "after": 4161,
+    "sparsity": 0.0
+   },
+   {
+    "path": "D1",
+    "depth": 1,
+    "before": 4161,
+    "after": 2097,
+    "sparsity": 0.5
+   },
+   {
+    "path": "D1.A",
+    "depth": 2,
+    "before": 4161,
+    "after": 2097,
+    "sparsity": 0.5
+   },
+   {
+    "path": "D1.B",
+    "depth": 2,
+    "before": 4161,
+    "after": 859,
+    "sparsity": 0.8
+   },
+   {
+    "path": "D2",
+    "depth": 1,
+    "before": 4161,
+    "after": 4161,
+    "sparsity": 0.0
+   },
+   {
+    "path": "D2.B",
+    "depth": 2,
+    "before": 4161,
+    "after": 859,
+    "sparsity": 0.8
+   },
+   {
+    "path": "D3",
+    "depth": 1,
+    "before": 4161,
+    "after": 4161,
+    "sparsity": 0.0
+   },
+   {
+    "path": "D3.B",
+    "depth": 2,
+    "before": 4161,
+    "after": 2097,
+    "sparsity": 0.5
+   },
+   {
+    "path": "D4",
+    "depth": 1,
+    "before": 4161,
+    "after": 4161,
+    "sparsity": 0.0
+   },
+   {
+    "path": "D4.B",
+    "depth": 2,
+    "before": 4161,
+    "after": 2097,
+    "sparsity": 0.5
+   },
+   {
+    "path": "D5",
+    "depth": 1,
+    "before": 4161,
+    "after": 4161,
+    "sparsity": 0.0
+   },
+   {
+    "path": "D5.B",
+    "depth": 2,
+    "before": 4161,
+    "after": 2097,
+    "sparsity": 0.5
+   },
+   {
+    "path": "D6",
+    "depth": 1,
+    "before": 4161,
+    "after": 4161,
+    "sparsity": 0.0
+   },
+   {
+    "path": "D7",
+    "depth": 1,
+    "before": 4161,
+    "after": 4161,
+    "sparsity": 0.0
+   },
+   {
+    "path": "D7.B",
+    "depth": 2,
+    "before": 4161,
+    "after": 859,
+    "sparsity": 0.8
+   },
+   {
+    "path": "D8",
+    "depth": 1,
+    "before": 4161,
+    "after": 2097,
+    "sparsity": 0.5
+   },
+   {
+    "path": "D9",
+    "depth": 1,
+    "before": 4161,
+    "after": 2097,
+    "sparsity": 0.5
+   }
+  ],
+  "train_acc": 1.0,
+  "test_acc": 0.7078999876976013,
+  "test_acc_before": 0.7074999809265137,
+  "features_used_before": [
+   128,
+   128,
+   128,
+   128,
+   128,
+   128,
+   128,
+   128,
+   128,
+   128,
+   128,
+   128,
+   128,
+   128,
+   128,
+   128,
+   128,
+   128
+  ],
+  "features_used_after": [
+   128,
+   128,
+   128,
+   128,
+   128,
+   128,
+   127,
+   128,
+   128,
+   128,
+   128,
+   128,
+   128,
+   128,
+   128,
+   128,
+   128,
+   128
+  ],
+  "secs": 38.85655474662781
+ }
+}

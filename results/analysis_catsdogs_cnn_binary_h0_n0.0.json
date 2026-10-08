@@ -1,0 +1,42 @@
+{
+ "tag": "catsdogs_cnn_binary_h0_n0.0",
+ "nodes": [
+  {
+   "path": "R",
+   "depth": 0,
+   "kind": "linear",
+   "n": 19989,
+   "npos": 9989,
+   "noisy_frac_pos": null,
+   "own_fire_train": 0.5010255575180054,
+   "own_fire_test": 0.506600022315979,
+   "subtree_fire_test": 0.506600022315979,
+   "cols": null
+  },
+  {
+   "path": "R.A",
+   "depth": 1,
+   "kind": "iso",
+   "n": 10404,
+   "npos": 404,
+   "noisy_frac_pos": null,
+   "own_fire_train": 0.03883121907711029,
+   "own_fire_test": 0.00019999999494757503,
+   "subtree_fire_test": 0.00019999999494757503,
+   "cols": null
+  },
+  {
+   "path": "R.B",
+   "depth": 1,
+   "kind": "iso",
+   "n": 10419,
+   "npos": 430,
+   "noisy_frac_pos": null,
+   "own_fire_train": 0.04127075523138046,
+   "own_fire_test": 0.00019999999494757503,
+   "subtree_fire_test": 0.00019999999494757503,
+   "cols": null
+  }
+ ],
+ "base_noise": 0.0
+}

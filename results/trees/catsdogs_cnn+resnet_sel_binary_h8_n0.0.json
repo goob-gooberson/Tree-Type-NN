@@ -1,0 +1,174 @@
+{
+ "args": {
+  "dataset": "catsdogs",
+  "feats": "cnn,resnet",
+  "pca": 128,
+  "model": "binary",
+  "n_train": 0,
+  "noise": 0.0,
+  "h": 8,
+  "h_root": 64,
+  "epochs": 300,
+  "root_epochs": 100,
+  "wd": 0.0,
+  "max_depth": 10,
+  "iso_below": 0,
+  "pos_weight": "auto",
+  "fp_ratio": 3.0,
+  "loss": "hinge",
+  "resolve": "closed",
+  "lp_l1": 0.0,
+  "seed": 0,
+  "threads": 1,
+  "tag": null,
+  "save_model": true,
+  "subset": null,
+  "select_trunk": true,
+  "verbose": false
+ },
+ "cfg": {
+  "h": 8,
+  "h_root": 64,
+  "epochs": 300,
+  "root_epochs": 100,
+  "lr": 0.01,
+  "wd": 0.0,
+  "loss": "hinge",
+  "pos_weight": "auto",
+  "max_depth": 10,
+  "iso_below": 0,
+  "fp_ratio": 3.0,
+  "delta": 1.0,
+  "resolve": "closed",
+  "lp_l1": 0.0,
+  "seed": 0,
+  "verbose": false,
+  "blocks": [
+   [
+    0,
+    128
+   ],
+   [
+    128,
+    256
+   ]
+  ]
+ },
+ "summary": {
+  "train_acc": 1.0,
+  "test_acc": 0.9333999752998352,
+  "root_train_acc": 0.9793886542320251,
+  "root_test_acc": 0.9344000220298767,
+  "n_nodes": 5,
+  "n_iso": 0,
+  "params": 5205,
+  "max_depth": 2,
+  "test_changed": 85,
+  "test_changed_fixed": 40,
+  "test_changed_broken": 45,
+  "secs": 14.681122541427612
+ },
+ "nodes": [
+  {
+   "path": "R",
+   "depth": 0,
+   "kind": "mlp",
+   "h": 8,
+   "cols": [
+    128,
+    256
+   ],
+   "n": 19989,
+   "npos": 9989,
+   "err": 412,
+   "n_c3": 226,
+   "n_c4": 186,
+   "params": 1041,
+   "fallback": null,
+   "mlp_tp": 9763,
+   "mlp_err": 412,
+   "wA": 8.364707946777344,
+   "wB": -6.423887252807617
+  },
+  {
+   "path": "R.A",
+   "depth": 1,
+   "kind": "mlp",
+   "h": 8,
+   "cols": [
+    128,
+    256
+   ],
+   "n": 10226,
+   "npos": 226,
+   "err": 5,
+   "n_c3": 0,
+   "n_c4": 5,
+   "params": 1041,
+   "fallback": null,
+   "mlp_tp": 226,
+   "mlp_err": 5,
+   "wA": 0.0,
+   "wB": -1.7393181324005127
+  },
+  {
+   "path": "R.A.B",
+   "depth": 2,
+   "kind": "mlp",
+   "h": 8,
+   "cols": [
+    0,
+    128
+   ],
+   "n": 231,
+   "npos": 5,
+   "err": 0,
+   "n_c3": 0,
+   "n_c4": 0,
+   "params": 1041,
+   "fallback": null,
+   "mlp_tp": 5,
+   "mlp_err": 0
+  },
+  {
+   "path": "R.B",
+   "depth": 1,
+   "kind": "mlp",
+   "h": 8,
+   "cols": [
+    128,
+    256
+   ],
+   "n": 10175,
+   "npos": 186,
+   "err": 3,
+   "n_c3": 0,
+   "n_c4": 3,
+   "params": 1041,
+   "fallback": null,
+   "mlp_tp": 186,
+   "mlp_err": 3,
+   "wA": 0.0,
+   "wB": -1.0226620435714722
+  },
+  {
+   "path": "R.B.B",
+   "depth": 2,
+   "kind": "mlp",
+   "h": 8,
+   "cols": [
+    0,
+    128
+   ],
+   "n": 189,
+   "npos": 3,
+   "err": 0,
+   "n_c3": 0,
+   "n_c4": 0,
+   "params": 1041,
+   "fallback": null,
+   "mlp_tp": 3,
+   "mlp_err": 0
+  }
+ ]
+}

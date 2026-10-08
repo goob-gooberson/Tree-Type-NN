@@ -1,0 +1,66 @@
+{
+ "tag": "catsdogs_resnet_binary_h8_n0.0",
+ "nodes": [
+  {
+   "path": "R",
+   "depth": 0,
+   "kind": "mlp",
+   "n": 19989,
+   "npos": 9989,
+   "noisy_frac_pos": null,
+   "own_fire_train": 0.4977237582206726,
+   "own_fire_test": 0.5027999877929688,
+   "subtree_fire_test": 0.5067999958992004,
+   "cols": null
+  },
+  {
+   "path": "R.A",
+   "depth": 1,
+   "kind": "mlp",
+   "n": 10226,
+   "npos": 226,
+   "noisy_frac_pos": null,
+   "own_fire_train": 0.02258947864174843,
+   "own_fire_test": 0.06939999759197235,
+   "subtree_fire_test": 0.06340000033378601,
+   "cols": null
+  },
+  {
+   "path": "R.A.B",
+   "depth": 2,
+   "kind": "mlp",
+   "n": 231,
+   "npos": 5,
+   "noisy_frac_pos": null,
+   "own_fire_train": 0.021645022556185722,
+   "own_fire_test": 0.13459999859333038,
+   "subtree_fire_test": 0.13459999859333038,
+   "cols": null
+  },
+  {
+   "path": "R.B",
+   "depth": 1,
+   "kind": "mlp",
+   "n": 10175,
+   "npos": 186,
+   "noisy_frac_pos": null,
+   "own_fire_train": 0.01857493817806244,
+   "own_fire_test": 0.05820000171661377,
+   "subtree_fire_test": 0.0568000003695488,
+   "cols": null
+  },
+  {
+   "path": "R.B.B",
+   "depth": 2,
+   "kind": "mlp",
+   "n": 189,
+   "npos": 3,
+   "noisy_frac_pos": null,
+   "own_fire_train": 0.01587301678955555,
+   "own_fire_test": 0.11219999939203262,
+   "subtree_fire_test": 0.11219999939203262,
+   "cols": null
+  }
+ ],
+ "base_noise": 0.0
+}
