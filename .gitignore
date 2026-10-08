@@ -1,0 +1,14 @@
+data
+logs/
+__pycache__/
+*.pyc
+results/trees/*.pt
+results/*_maps.pt
+report/*.aux
+report/*.log
+report/*.out
+report/*.toc
+overleaf.zip
+results_reference/
+.venv/
+venv/
